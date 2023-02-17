@@ -1,0 +1,50 @@
+version: '3'
+services:
+  postgres:
+    image: 'postgres:latest'
+  redis:
+    image: 'redis:latest'
+  api:
+    build:
+      context: "./server"
+      dockerfile: "Dockerfile.dev"
+    volumes:
+      - /home/node/app/node_modules
+      - ./server:/home/node/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - USER=postgres
+      - HOST=portgres
+      - DATABASE=postgres
+      - PASSWORD=postgrs_password
+      - PORT=5432
+  worker:
+    build:
+      context: "./worker"
+      dockerfile: "Dockerfile.dev"
+    volumes:
+      - /home/node/app/node_modules
+      - ./worker:/home/node/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+  client:
+    build:
+      context: "./client"
+      dockerfile: "Dockerfile.dev"
+    volumes:
+      - /usr/node/app/node_modules
+      - ./client:/usr/node/app
+    environment:
+      - WDS_SOCKET_PORT=0
+  nginx:
+    depends_on:
+      - api
+      - client
+    restart: always
+    build:
+      context: "./nginx"
+      dockerfile: "Dockerfile.dev"
+    ports:
+      - '3050:80'
