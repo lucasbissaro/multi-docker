@@ -13,3 +13,10 @@ after_sucess:
   - docker build -t lucasbissaro/multi-server .server/
   - docker build -t lucasbissaro/multi-worker .worker/
   - docker build -t lucasbissaro/multi-nginx .nginx/
+
+  - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_ID" --password-stdin
+  - docker push lucasbissaro/multi-client 
+  - docker push lucasbissaro/multi-server 
+  - docker push lucasbissaro/multi-worker 
+  - docker push lucasbissaro/multi-nginx 
+  
